@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git 'https://github.com/phungthanhthu/reqres-api-project.git'
+                git branch: 'main', url: 'https://github.com/phungthanhthu/reqres-api-project.git'
             }
         }
 
