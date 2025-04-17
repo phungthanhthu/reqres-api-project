@@ -14,9 +14,16 @@ pipeline {
             }
         }
 
-        stage('Run API Tests') {
+        stage('Run Positive Tests') {
             steps {
-                bat 'newman run reqres-collection.json'
+                bat 'newman run reqres-positive-collection.json'
+            }
+        }
+
+        stage('Run Negative Tests') {
+            steps {
+                // Dùng --suppress-exit-code để không fail pipeline nếu test này fail (vì negative thường fail mà đúng)
+                bat 'newman run reqres-negative-collection.json --suppress-exit-code'
             }
         }
     }
