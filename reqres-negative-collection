@@ -1,0 +1,1837 @@
+{
+	"info": {
+		"_postman_id": "94515d24-af2f-4504-9451-cb326591be12",
+		"name": "reqres-negative-test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39377829",
+		"_collection_link": "https://hai-con-bee-luoi-bieng.postman.co/workspace/2-con-Bee-l%C6%B0%E1%BB%9Di-bi%E1%BA%BFng-Workspace~638f3ad6-4d0d-4343-80b6-83cc78f7548d/collection/39377829-94515d24-af2f-4504-9451-cb326591be12?action=share&source=collection_link&creator=39377829"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"item": []
+		},
+		{
+			"name": "Register",
+			"item": [
+				{
+					"name": "Register with incorrect password",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"email\", \"eve.holt@reqres.in\");\r",
+									"pm.collectionVariables.set(\"password\", \"aaaaaaaa\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Incorrect password\", function () {\r",
+									"    pm.expect(pm.response.code).to.eql(400);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"pm.test(\"Response contains error message\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"error\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Undefined id and token\", function () {\r",
+									"    pm.expect(jsonData).to.not.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.not.have.property(\"token\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"email\": \"{{email}}\",\r\n  \"password\": \"{{password}}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://reqres.in/api/register",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get list Users",
+			"item": [
+				{
+					"name": "Get with incorrect ID format",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"string id is incorrect\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"pm.test(\"Data array exists even with invalid page string\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"data\");\r",
+									"    pm.expect(jsonData.data).to.be.an(\"array\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://reqres.in/api/users?page=abc",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "abc"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get with negative integer page",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Invalid page\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Negative page handled gracefully\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data).to.be.an(\"array\"); \r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://reqres.in/api/users?page=-3",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "-3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get with invalid page",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Invalid page\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Empty data array for non-existing page\", function () {\r",
+									"    const jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.data).to.be.an(\"array\").that.is.empty;\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://reqres.in/api/users?page=999",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "999"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Get single User",
+			"item": [
+				{
+					"name": "Get with incorrect ID format",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"incorrect id format\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"const body = pm.response.text();\r",
+									"pm.test(\"No user data returned\", function () {\r",
+									"    pm.expect(body).to.eql(\"{}\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://reqres.in/api/users/abc",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users",
+								"abc"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get with negative integer ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"incorrect id format\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"const body = pm.response.text();\r",
+									"pm.test(\"No user data returned\", function () {\r",
+									"    pm.expect(body).to.eql(\"{}\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://reqres.in/api/users/-3",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users",
+								"-3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get with null ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Please enter ID\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"const body = pm.response.text();\r",
+									"pm.test(\"No user data returned\", function () {\r",
+									"    pm.expect(body).to.eql(\"{}\");\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://reqres.in/api/users/",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create a User",
+			"item": [
+				{
+					"name": "Create with empty name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"name cannot be empty\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//actual\r",
+									"const name_actual = jsonData.name;\r",
+									"const job_actual = jsonData.job;\r",
+									"\r",
+									"//expected\r",
+									"const name_expected = pm.variables.get(\"name\")\r",
+									"const job_expected = pm.variables.get(\"job\")\r",
+									"\r",
+									"//compare\r",
+									"pm.test(\"name is correct\", function () {\r",
+									"    pm.expect(name_actual).to.eql(name_expected);\r",
+									"});\r",
+									"pm.test(\"job is correct\", function () {\r",
+									"    pm.expect(job_actual).to.eql(job_expected);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response has id and createdAt\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"createdAt\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"name\", \"\");\r",
+									"pm.collectionVariables.set(\"job\", \"programmer\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"job\": \"{{job}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://reqres.in/api/users",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create with empty job",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"job cannot be empty\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//actual\r",
+									"const name_actual = jsonData.name;\r",
+									"const job_actual = jsonData.job;\r",
+									"\r",
+									"//expected\r",
+									"const name_expected = pm.variables.get(\"name\")\r",
+									"const job_expected = pm.variables.get(\"job\")\r",
+									"\r",
+									"//compare\r",
+									"pm.test(\"name is correct\", function () {\r",
+									"    pm.expect(name_actual).to.eql(name_expected);\r",
+									"});\r",
+									"pm.test(\"job is correct\", function () {\r",
+									"    pm.expect(job_actual).to.eql(job_expected);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response has id and createdAt\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"createdAt\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"name\", \"doja cat\");\r",
+									"pm.collectionVariables.set(\"job\", \"\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"job\": \"{{job}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://reqres.in/api/users",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create with missing name field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"name cannot be empty\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//actual\r",
+									"const job_actual = jsonData.job;\r",
+									"\r",
+									"//expected\r",
+									"const job_expected = pm.variables.get(\"job\")\r",
+									"\r",
+									"//compare\r",
+									"pm.test(\"job is correct\", function () {\r",
+									"    pm.expect(job_actual).to.eql(job_expected);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response doesn't contains name\", function () {\r",
+									"    pm.expect(jsonData).to.not.have.property(\"name\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response has id and createdAt\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"createdAt\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"name\", \"\");\r",
+									"pm.collectionVariables.set(\"job\", \"programmer\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"job\": \"{{job}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://reqres.in/api/users",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create with missing job field",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"job cannot be empty\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//actual\r",
+									"const name_actual = jsonData.name;\r",
+									"\r",
+									"//expected\r",
+									"const name_expected = pm.variables.get(\"name\")\r",
+									"\r",
+									"//compare\r",
+									"pm.test(\"name is correct\", function () {\r",
+									"    pm.expect(name_actual).to.eql(name_expected);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response doesn't contains job\", function () {\r",
+									"    pm.expect(jsonData).to.not.have.property(\"job\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response has id and createdAt\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"createdAt\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"name\", \"doja cat\");\r",
+									"pm.collectionVariables.set(\"job\", \"\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{name}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://reqres.in/api/users",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create with missing all information",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"missing name and job\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//actual\r",
+									"const name_actual = jsonData.name;\r",
+									"const job_actual = jsonData.job;\r",
+									"\r",
+									"//expected\r",
+									"const name_expected = pm.variables.get(\"name\")\r",
+									"const job_expected = pm.variables.get(\"job\")\r",
+									"\r",
+									"//compare\r",
+									"pm.test(\"name is correct\", function () {\r",
+									"    pm.expect(name_actual).to.eql(name_expected);\r",
+									"});\r",
+									"pm.test(\"job is correct\", function () {\r",
+									"    pm.expect(job_actual).to.eql(job_expected);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response has id and createdAt\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"createdAt\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"name\", \"\");\r",
+									"pm.collectionVariables.set(\"job\", \"\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"job\": \"{{job}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://reqres.in/api/users",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create with empty body",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"missing name and job\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"response doesn't contains name and job\", function () {\r",
+									"    pm.expect(jsonData).to.not.have.property(\"name\");\r",
+									"    pm.expect(jsonData).to.not.have.property(\"job\");\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response has id and createdAt\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"createdAt\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"name\", \"\");\r",
+									"pm.collectionVariables.set(\"job\", \"\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://reqres.in/api/users",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create with wrong name format",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.collectionVariables.set(\"name\", \"121212@@\");\r",
+									"pm.collectionVariables.set(\"job\", \"it\");"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"name must be a string\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									"const jsonData = pm.response.json();\r",
+									"\r",
+									"//actual\r",
+									"const name_actual = jsonData.name;\r",
+									"const job_actual = jsonData.job;\r",
+									"\r",
+									"//expected\r",
+									"const name_expected = pm.variables.get(\"name\")\r",
+									"const job_expected = pm.variables.get(\"job\")\r",
+									"\r",
+									"//compare\r",
+									"pm.test(\"name is correct\", function () {\r",
+									"    pm.expect(name_actual).to.eql(name_expected);\r",
+									"});\r",
+									"pm.test(\"job is correct\", function () {\r",
+									"    pm.expect(job_actual).to.eql(job_expected);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"response has id and createdAt\", function () {\r",
+									"    pm.expect(jsonData).to.have.property(\"id\");\r",
+									"    pm.expect(jsonData).to.have.property(\"createdAt\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"job\": \"{{job}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://reqres.in/api/users",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Update a User",
+			"item": [
+				{
+					"name": "Test with user information",
+					"item": [
+						{
+							"name": "Update with empty name",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"newName\", \"\");\r",
+											"pm.collectionVariables.set(\"newJob\", \"leader\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"missing name\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//actual\r",
+											"const name_actual = jsonData.name;\r",
+											"const job_actual = jsonData.job;\r",
+											"\r",
+											"//expected\r",
+											"const name_expected = pm.variables.get(\"newName\")\r",
+											"const job_expected = pm.variables.get(\"newJob\")\r",
+											"\r",
+											"//compare\r",
+											"pm.test(\"new name has been updated\", function () {\r",
+											"    pm.expect(name_actual).to.eql(name_expected);\r",
+											"});\r",
+											"pm.test(\"new job has been updated\", function () {\r",
+											"    pm.expect(job_actual).to.eql(job_expected);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"response has updatedAt\", function () {\r",
+											"    pm.expect(jsonData).to.have.property(\"updatedAt\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{newName}}\",\r\n    \"job\": \"{{newJob}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://reqres.in/api/users/4",
+									"protocol": "https",
+									"host": [
+										"reqres",
+										"in"
+									],
+									"path": [
+										"api",
+										"users",
+										"4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update with empty job",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"newName\", \"thanhthu\");\r",
+											"pm.collectionVariables.set(\"newJob\", \"\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"missing job\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//actual\r",
+											"const name_actual = jsonData.name;\r",
+											"const job_actual = jsonData.job;\r",
+											"\r",
+											"//expected\r",
+											"const name_expected = pm.variables.get(\"newName\")\r",
+											"const job_expected = pm.variables.get(\"newJob\")\r",
+											"\r",
+											"//compare\r",
+											"pm.test(\"new name has been updated\", function () {\r",
+											"    pm.expect(name_actual).to.eql(name_expected);\r",
+											"});\r",
+											"pm.test(\"new job has been updated\", function () {\r",
+											"    pm.expect(job_actual).to.eql(job_expected);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"response has updatedAt\", function () {\r",
+											"    pm.expect(jsonData).to.have.property(\"updatedAt\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{newName}}\",\r\n    \"job\": \"{{newJob}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://reqres.in/api/users/4",
+									"protocol": "https",
+									"host": [
+										"reqres",
+										"in"
+									],
+									"path": [
+										"api",
+										"users",
+										"4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update with missing name field",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"newName\", \"\");\r",
+											"pm.collectionVariables.set(\"newJob\", \"designer\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"missing name field\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//actual\r",
+											"const job_actual = jsonData.job;\r",
+											"\r",
+											"//expected\r",
+											"const job_expected = pm.variables.get(\"newJob\")\r",
+											"\r",
+											"//compare\r",
+											"pm.test(\"new job has been updated\", function () {\r",
+											"    pm.expect(job_actual).to.eql(job_expected);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"response doesn't contains name\", function () {\r",
+											"    pm.expect(jsonData).to.not.have.property(\"name\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"response has updatedAt\", function () {\r",
+											"    pm.expect(jsonData).to.have.property(\"updatedAt\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"job\": \"{{newJob}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://reqres.in/api/users/4",
+									"protocol": "https",
+									"host": [
+										"reqres",
+										"in"
+									],
+									"path": [
+										"api",
+										"users",
+										"4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update with missing job field",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"newName\", \"thanhthu\");\r",
+											"pm.collectionVariables.set(\"newJob\", \"\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"missing job field\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//actual\r",
+											"const name_actual = jsonData.name;\r",
+											"\r",
+											"//expected\r",
+											"const name_expected = pm.variables.get(\"newName\")\r",
+											"\r",
+											"//compare\r",
+											"pm.test(\"new name has been update\", function () {\r",
+											"    pm.expect(name_actual).to.eql(name_expected);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"response doesn't contains job\", function () {\r",
+											"    pm.expect(jsonData).to.not.have.property(\"job\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"response has updatedAt\", function () {\r",
+											"    pm.expect(jsonData).to.have.property(\"updatedAt\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{newName}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://reqres.in/api/users/4",
+									"protocol": "https",
+									"host": [
+										"reqres",
+										"in"
+									],
+									"path": [
+										"api",
+										"users",
+										"4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update with missing all information",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"newName\", \"\");\r",
+											"pm.collectionVariables.set(\"newJob\", \"\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"name and job cannot empty\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//actual\r",
+											"const name_actual = jsonData.name;\r",
+											"const job_actual = jsonData.job;\r",
+											"\r",
+											"//expected\r",
+											"const name_expected = pm.variables.get(\"newName\")\r",
+											"const job_expected = pm.variables.get(\"newJob\")\r",
+											"\r",
+											"//compare\r",
+											"pm.test(\"new name has been updated\", function () {\r",
+											"    pm.expect(name_actual).to.eql(name_expected);\r",
+											"});\r",
+											"pm.test(\"new job has been updated\", function () {\r",
+											"    pm.expect(job_actual).to.eql(job_expected);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"response has updatedAt\", function () {\r",
+											"    pm.expect(jsonData).to.have.property(\"updatedAt\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{newName}}\",\r\n    \"job\": \"{{newJob}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://reqres.in/api/users/4",
+									"protocol": "https",
+									"host": [
+										"reqres",
+										"in"
+									],
+									"path": [
+										"api",
+										"users",
+										"4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update with empty body",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"newName\", \"\");\r",
+											"pm.collectionVariables.set(\"newJob\", \"\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"name and job cannot empty\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"pm.test(\"response doesn't contains name and job\", function () {\r",
+											"    pm.expect(jsonData).to.not.have.property(\"name\");\r",
+											"    pm.expect(jsonData).to.not.have.property(\"job\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"response has updatedAt\", function () {\r",
+											"    pm.expect(jsonData).to.have.property(\"updatedAt\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://reqres.in/api/users/4",
+									"protocol": "https",
+									"host": [
+										"reqres",
+										"in"
+									],
+									"path": [
+										"api",
+										"users",
+										"4"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update with wrong name format",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"newName\", \"1212##\");\r",
+											"pm.collectionVariables.set(\"newJob\", \"hr\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"name must be a string\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"const jsonData = pm.response.json();\r",
+											"\r",
+											"//actual\r",
+											"const name_actual = jsonData.name;\r",
+											"const job_actual = jsonData.job;\r",
+											"\r",
+											"//expected\r",
+											"const name_expected = pm.variables.get(\"newName\")\r",
+											"const job_expected = pm.variables.get(\"newJob\")\r",
+											"\r",
+											"//compare\r",
+											"pm.test(\"new name has been updated\", function () {\r",
+											"    pm.expect(name_actual).to.eql(name_expected);\r",
+											"});\r",
+											"pm.test(\"new job has been updated\", function () {\r",
+											"    pm.expect(job_actual).to.eql(job_expected);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"response has updatedAt\", function () {\r",
+											"    pm.expect(jsonData).to.have.property(\"updatedAt\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{newName}}\",\r\n    \"job\": \"{{newJob}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://reqres.in/api/users/4",
+									"protocol": "https",
+									"host": [
+										"reqres",
+										"in"
+									],
+									"path": [
+										"api",
+										"users",
+										"4"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Test with ID parameter",
+					"item": [
+						{
+							"name": "Update with empty ID",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"newName\", \"minh\");\r",
+											"pm.collectionVariables.set(\"newJob\", \"stylist\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Missing ID\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{newName}}\",\r\n    \"job\": \"{{newJob}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://reqres.in/api/users/",
+									"protocol": "https",
+									"host": [
+										"reqres",
+										"in"
+									],
+									"path": [
+										"api",
+										"users",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update with invalid ID",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"newName\", \"tus\");\r",
+											"pm.collectionVariables.set(\"newJob\", \"singer\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"ID not found\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{newName}}\",\r\n    \"job\": \"{{newJob}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://reqres.in/api/users/999",
+									"protocol": "https",
+									"host": [
+										"reqres",
+										"in"
+									],
+									"path": [
+										"api",
+										"users",
+										"999"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update with wrong ID format",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"newName\", \"quynh\");\r",
+											"pm.collectionVariables.set(\"newJob\", \"dancer\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"ID must be a number\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{newName}}\",\r\n    \"job\": \"{{newJob}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://reqres.in/api/users/abc",
+									"protocol": "https",
+									"host": [
+										"reqres",
+										"in"
+									],
+									"path": [
+										"api",
+										"users",
+										"abc"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update with negative integer ID",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.collectionVariables.set(\"newName\", \"minh\");\r",
+											"pm.collectionVariables.set(\"newJob\", \"stylist\");"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Invalid ID\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\": \"{{newName}}\",\r\n    \"job\": \"{{newJob}}\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://reqres.in/api/users/-3",
+									"protocol": "https",
+									"host": [
+										"reqres",
+										"in"
+									],
+									"path": [
+										"api",
+										"users",
+										"-3"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Delete a User",
+			"item": [
+				{
+					"name": "Delete with empty ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Missing ID\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://reqres.in/api/users/",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete with invalid ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ID not found\", function () {\r",
+									"    pm.response.to.have.status(404);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://reqres.in/api/users/999",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users",
+								"999"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete with wrong ID format",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"ID must be a number\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://reqres.in/api/users/abc",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users",
+								"abc"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete with negative integer ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Invalid ID\", function () {\r",
+									"    pm.response.to.have.status(400);\r",
+									"});\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"packages": {},
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://reqres.in/api/users/-3",
+							"protocol": "https",
+							"host": [
+								"reqres",
+								"in"
+							],
+							"path": [
+								"api",
+								"users",
+								"-3"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "newName",
+			"value": ""
+		},
+		{
+			"key": "newJob",
+			"value": ""
+		}
+	]
+}
