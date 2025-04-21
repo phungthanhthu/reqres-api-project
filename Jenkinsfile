@@ -8,33 +8,35 @@ pipeline {
             }
         }
 
-        stage('Install Newman') {
+        stage('Install Newman + Reporter') {
             steps {
                 bat 'npm install -g newman'
+                bat 'npm install -g newman-reporter-htmlextra'
             }
         }
 
         stage('Run Positive Tests') {
             steps {
-                bat 'newman run reqres-positive-collection.json -r cli,html --reporter-html-export positive-report.html'
+                bat 'newman run reqres-positive-collection.json -r htmlextra --reporter-htmlextra-export reports/positive-report.html'
             }
         }
 
         stage('Run Negative Tests') {
             steps {
-                bat 'newman run reqres-negative-collection.json -r cli,html --reporter-html-export negative-report.html --suppress-exit-code'
+                bat 'newman run reqres-negative-collection.json -r htmlextra --reporter-htmlextra-export reports/negative-report.html --suppress-exit-code'
             }
         }
+    }
 
-        stage('Archive Reports') {
-            steps {
-                archiveArtifacts artifacts: '*.html', fingerprint: true
-                publishHTML([target: [
-                    reportDir: '.', 
-                    reportFiles: 'positive-report.html,negative-report.html',
-                    reportName: 'Newman Test Reports'
-                ]])
-            }
+    post {
+        always {
+            publishHTML([
+                reportDir: 'reports',
+                reportFiles: 'positive-report.html,negative-report.html',
+                reportName: 'Newman Test Reports',
+                keepAll: true,
+                alwaysLinkToLastBuild: true
+            ])
         }
     }
 }
