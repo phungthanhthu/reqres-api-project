@@ -16,14 +16,24 @@ pipeline {
 
         stage('Run Positive Tests') {
             steps {
-                bat 'newman run reqres-positive-collection.json'
+                bat 'newman run reqres-positive-collection.json -r cli,html --reporter-html-export positive-report.html'
             }
         }
 
         stage('Run Negative Tests') {
             steps {
-                // Dùng --suppress-exit-code để không fail pipeline nếu test này fail (vì negative thường fail mà đúng)
-                bat 'newman run reqres-negative-collection.json --suppress-exit-code'
+                bat 'newman run reqres-negative-collection.json -r cli,html --reporter-html-export negative-report.html --suppress-exit-code'
+            }
+        }
+
+        stage('Archive Reports') {
+            steps {
+                archiveArtifacts artifacts: '*.html', fingerprint: true
+                publishHTML([target: [
+                    reportDir: '.', 
+                    reportFiles: 'positive-report.html,negative-report.html',
+                    reportName: 'Newman Test Reports'
+                ]])
             }
         }
     }
