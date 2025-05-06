@@ -31,11 +31,12 @@ pipeline {
     post {
         always {
             publishHTML([
-                reportDir: 'reports',
-                reportFiles: 'positive-report.html,negative-report.html',
-                reportName: 'Newman Test Reports',
+                allowMissing: false,
+                alwaysLinkToLastBuild: true,
                 keepAll: true,
-                alwaysLinkToLastBuild: true
+                reportDir: 'newman-report',
+                reportFiles: 'index.html',
+                reportName: 'Newman Test Report'
             ])
         }
     }
