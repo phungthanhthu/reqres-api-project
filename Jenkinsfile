@@ -34,7 +34,7 @@ pipeline {
                 allowMissing: false,
                 alwaysLinkToLastBuild: true,
                 keepAll: true,
-                reportDir: 'newman-report',
+                reportDir: 'reports',
                 reportFiles: 'index.html',
                 reportName: 'Newman Test Report'
             ])
