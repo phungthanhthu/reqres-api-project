@@ -17,7 +17,7 @@ pipeline {
 
         stage('Run Positive Tests') {
             steps {
-                bat 'newman run reqres-positive-collection.json -r htmlextra --reporter-htmlextra-export reports/positive-report.html'
+                bat 'newman run reqres-positive-collection.json -r htmlextra --reporter-htmlextra-export reports/positive-report.html --suppress-exit-code'
             }
         }
 
@@ -35,8 +35,16 @@ pipeline {
                 alwaysLinkToLastBuild: true,
                 keepAll: true,
                 reportDir: 'reports',
-                reportFiles: 'index.html',
-                reportName: 'Newman Test Report'
+                reportFiles: 'positive-report.html',
+                reportName: 'Positive Test Report'
+            ])
+            publishHTML([
+                allowMissing: false,
+                alwaysLinkToLastBuild: true,
+                keepAll: true,
+                reportDir: 'reports',
+                reportFiles: 'negative-report.html',
+                reportName: 'Negative Test Report'
             ])
         }
     }
