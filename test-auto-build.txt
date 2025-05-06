@@ -1,0 +1,4 @@
+Cái này để test auto build dùng ngrok
+cd đến ngrok
+chạy ngrok http 8080
+cop dòng forwarding đó vô setting repo của github tìm webhook, edit xong dán vô chỗ payload url
